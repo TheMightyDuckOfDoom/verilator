@@ -1281,8 +1281,18 @@ public:
     // *this != that, which might be used for change detection/trigger computation, but avoid
     // operator overloading in VlUnpacked for safety in other contexts.
     bool neq(const VlUnpacked<T_Value, T_Depth>& that) const { return neq(*this, that); }
+    bool neq(const T_Value (&that) [T_Depth]) const { return neq(*this, that); }
     // Similar to 'neq' above, *this = that used for change detection
     void assign(const VlUnpacked<T_Value, T_Depth>& that) { *this = that; }
+    void assign(const T_Value(&that)[T_Depth]) { 
+        for (size_t i = 0; i < T_Depth; i++) {
+            this->m_storage[i] = that[i];
+        }
+    }
+    VlUnpacked& operator=(const T_Value(&that)[T_Depth]) {
+        assign(that);
+        return *this;
+    }
     bool operator==(const VlUnpacked<T_Value, T_Depth>& that) const { return !neq(that); }
     bool operator!=(const VlUnpacked<T_Value, T_Depth>& that) { return neq(that); }
 
@@ -1465,6 +1475,15 @@ private:
         for (size_t i = 0; i < T_Dep; ++i) {
             // Recursive 'neq', in case T_Val is also a VlUnpacked<_, _>
             if (neq(a.m_storage[i], b.m_storage[i])) return true;
+        }
+        return false;
+    }
+
+    template <typename T_Val, std::size_t T_Dep>
+    static bool neq(const VlUnpacked<T_Val, T_Dep>& a, const T_Val(&b)[T_Dep]) {
+        for (size_t i = 0; i < T_Dep; ++i) {
+            // Recursive 'neq', in case T_Val is also a VlUnpacked<_, _>
+            if (neq(a.m_storage[i], b[i])) return true;
         }
         return false;
     }

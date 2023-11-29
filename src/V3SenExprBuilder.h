@@ -166,7 +166,7 @@ class SenExprBuilder final {
         case VEdgeType::ET_CHANGED:
         case VEdgeType::ET_HYBRID:  //
             if (VN_IS(senp->dtypep(), UnpackArrayDType)) {
-                AstCMethodHard* const resultp = new AstCMethodHard{flp, currp(), "neq", prevp()};
+                AstCMethodHard* const resultp = new AstCMethodHard{flp, prevp(), "neq", currp()};
                 resultp->dtypeSetBit();
                 return {resultp, true};
             }
